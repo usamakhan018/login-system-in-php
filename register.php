@@ -12,6 +12,15 @@ include 'includes/connect.php';
 	
 <?php include 'includes/navbar.php'; ?>
 
+<?php if (isset($_GET['msg'])) { ?>
+<div class="bd-example">
+        <div class="alert alert-<?php echo $_GET['cat']?> alert-dismissible fade show" role="alert">
+          <center><?php echo $_GET['msg']; ?></center>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+</div>
+<?php } ?>
+
 <div class="row">
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
@@ -31,7 +40,7 @@ include 'includes/connect.php';
 </div>
 
 	
-
+	<script type="text/javascript" src="dist/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
@@ -44,12 +53,31 @@ if(isset($_POST['submit'])) {
 	if ($password != $cpassword) {
 		header("location: register.php?msg=password is incorrect");
 	}
+
+
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		header('location: register.php?msg=Invalid Email&cat=danger');
+		die();
+	} else if(strlen($password) < 6) {
+		header('location: register.php?msg=Password is soo small please pick a password of at least 6 characters&cat=danger');
+		die();
+	}
+
+	$q = "SELECT * FROM users where email='$email'";
+	$r = mysqli_query($db, $q);
+	$row = mysqli_fetch_array($r);
+	if ($row > 0) {
+		header('location: register.php?msg=email already exists please pick another&cat=danger');
+		die();
+	}
+
+
 	$password = password_hash($password, PASSWORD_DEFAULT);
 	$query = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
 
 	$run = mysqli_query($db, $query);
 
-	echo "Now you can login";
+	header("location: register.php?msg=Succesfully Signed Up Now you can <a href='./login.php'>log in</a> &cat=info ");
 
 }
 

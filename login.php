@@ -16,6 +16,14 @@ session_start();
 </head>
 <body>
 <?php include 'includes/navbar.php'; ?>
+<?php if (isset($_GET['msg'])) { ?>
+<div class="bd-example">
+        <div class="alert alert-<?php echo $_GET['cat']?> alert-dismissible fade show" role="alert">
+          <center><?php echo $_GET['msg']; ?></center>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+</div>
+<?php } ?>	
 <div class="row">
 	<div class="col-md-4"></div>
 	<div class="col-md-4">
@@ -32,6 +40,7 @@ session_start();
 	</div>
 	<div class="col-md-4"></div>
 </div>
+	<script type="text/javascript" src="dist/bootstrap.bundle.min.js"></script>
 
 
 </body>
@@ -45,14 +54,18 @@ if(isset($_POST['submit'])) {
 	$password = $_POST['password'];
 	$query = "SELECT * FROM users WHERE email='$email'";
 	$run = mysqli_query($db, $query);
-	if(mysqli_num_rows($run) > 0) {
-		echo "success";
-		$_SESSION['user'] = $email;
-		$d = mysqli_fetch_array($run);
-		$_SESSION['id'] = $d['id'];
-		header("location: index.php?msg=You are successfully Logged In!&cat=success");
+	$row = mysqli_num_rows($run);
+	if($row > 0) {
+		if ($password == $row['password']) {
+			$_SESSION['user'] = $email;
+			$d = mysqli_fetch_array($run);
+			$_SESSION['id'] = $d['id'];
+			header("location: index.php?msg=You are successfully Logged In!&cat=success");
+		} else {
+			header("location: login.php?msg=Password is incorrect!&cat=danger");
+		}
 	} else {
-		echo "failed";
+		header("location: login.php?msg=Email does not exists please <a href='register.php'>register</a>!&cat=danger");
 	}
 
 }

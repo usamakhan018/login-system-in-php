@@ -22,12 +22,7 @@ if(!isset($_SESSION["user"])) {
 
 
 <?php include 'includes/navbar.php'; ?>
-<?php 
-if (isset($_GET['msg'])) {
-
-?>
-
-
+<?php if (isset($_GET['msg'])) { ?>
 <div class="bd-example">
         <div class="alert alert-<?php echo $_GET['cat']?> alert-dismissible fade show" role="alert">
           <center><?php echo $_GET['msg']; ?></center>
